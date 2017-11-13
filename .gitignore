@@ -1,3 +1,6 @@
 venv1/
 data/
 __pycache__
+config.py
+courses.db
+courses1.db
