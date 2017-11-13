@@ -31,11 +31,22 @@ class UdemyCoursePipeline(object):
 
         """
         session = self.Session()
-        course = Course(**item)
+
 
         try:
-            session.add(course)
-            session.commit()
+            course=session.query(Course).filter(Course.udemy_url == item['udemy_url']).limit(1).with_for_update().one_or_none()
+            if course is not None:
+                print("course already inside")
+                item_dict=dict(item)
+                for key, value in item_dict.items():
+                    print(key,value)
+                    setattr(course,key,value)
+                session.add(course)
+                session.commit()
+            else:
+                course = Course(**item)
+                session.add(course)
+                session.commit()
         except:
             session.rollback()
             raise

@@ -12,11 +12,17 @@ from sqlalchemy.ext.declarative import declarative_base
 #class Project1Item(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-class UrlItem(scrapy.Item):
-    course_name= scrapy.Field()
-    udemy_url = scrapy.Field()
-    pass
 
+class CourseItem(scrapy.Item):
+    udemy_url = scrapy.Field()
+    checkout_url =scrapy.Field()
+    course_name = scrapy.Field()
+    discounted_price = scrapy.Field()
+    original_price = scrapy.Field()
+    date_last_checked = scrapy.Field()
+    status = scrapy.Field()
+    remarks = scrapy.Field()
+    pass
 
 # from datetime import datetime
 
@@ -38,7 +44,7 @@ class Course(Base):
     remarks = Column(String, default=None, index=True)
 
     #----------------------------------------------------------------------
-    def __init__(self, udemy_url, course_name, checkout_url=None, discounted_price=None, original_price=None, date_last_checked=None, status=None, remarks=None):
+    def __init__(self, udemy_url, course_name=None, checkout_url=None, discounted_price=None, original_price=None, date_last_checked=None, status=None, remarks=None):
 
 
         self.udemy_url = udemy_url
@@ -49,6 +55,7 @@ class Course(Base):
         self.date_last_checked = date_last_checked
         self.status = status
         self.remarks = remarks
+
 
 # create tables
 Base.metadata.create_all(engine)

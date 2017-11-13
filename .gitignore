@@ -1,6 +1,7 @@
 venv1/
 data/
-__pycache__
+__pycache__/
 config.py
 courses.db
 courses1.db
+project1/project1/spiders/__pycache__/
