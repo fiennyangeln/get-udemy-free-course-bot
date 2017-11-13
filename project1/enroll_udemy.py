@@ -11,26 +11,24 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from project1.items import Course
 
-#from sqlalchemy.sql import func
 
 from config import *
-# import os
-
 
 # Initialise Database
 engine = create_engine('sqlite:///courses.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# first, let's do a quick check if there are even courses for us to enroll in itfp.
-# there are 3 main criteria that we need to look at:
+
+# Page to load should be:
 # 1. it should not be already enrolled - .filter(Course.remarks.isnot("enrolled"))
-# 2. it should come from reddit - .filter(Course.post_date == "reddit")
-# 3. it should be a 0-dollar discounted price course
+# 2. it should be a 0-dollar discounted price course
+
+
 # if the total number (count) of this query is zero, it means there are no such courses for us to enroll in.
 # else, we proceed with the work process.
-if session.query(Course).filter(Course.discounted_price == 0).count() == 0:
-    print("no free course to enroll\n")
+if session.query(Course).filter(Course.discounted_price == 0).filter(Course.remarks.isnot("enrolled").count() == 0:
+    print("No free course to enroll :[\n")
 
 else:
     UDEMY_FOLDER_PATH = UDEMY_FOLDER_PATH + "chromedriver.exe" # + "chromedriver" for Mac users
@@ -38,7 +36,7 @@ else:
     driver.get("https://www.udemy.com/join/login-popup/")
 
     # when you assert something, you tell the program to test if the condition is true.
-    # if it isn't (i.e. condition is false), trigger an error.
+    # check if Udemy is inside the title
     assert "Udemy" in driver.title
 
     # we find the email field here.
@@ -55,12 +53,13 @@ else:
         #login by enter
         email_field.send_keys(Keys.RETURN)
     except:
+        #need except block to be safe in selenium ??
         wait = WebDriverWait(driver, 10)
         home_page = wait.until(EC.url_to_be("https://www.udemy.com/"))
 
     print("Login done.")
 
-    # we create a query to check for all courses with discounted_price = 0  and remarks != enrolled
+    # Query to load all courses with discounted_price = 0  and remarks != enrolled
     for row in session.query(Course).filter(Course.discounted_price == 0).filter(Course.remarks.isnot("enrolled")):
         checkout_url = row.checkout_url
 
@@ -79,7 +78,6 @@ else:
             # update db
             row.remarks = "enrolled"
             session.commit()
-            #print("row", str(checkout_tr.id), "updated\n")
 
         elif driver.current_url.endswith("/overview"):
             print("already enrolled. skipping to next...")
@@ -87,10 +85,9 @@ else:
 
             row.remarks = "enrolled"
             session.commit()
-            #print("row", str(checkout_tr.id), "updated\n")
 
         else:
             print("an error has occured. skipping to next...")
-    # finally, we quit the webdriver
+    # finally!
     driver.close()
-    print("all reddit enrollment completed.\n")
+    print("all enrollment completed.\n")
